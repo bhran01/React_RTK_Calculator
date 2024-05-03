@@ -10,51 +10,49 @@ let initialState = {
 const calculatorSlice = createSlice(
     {
         name: 'calculator',
-        initialState: initialState,
+        initialState,
         reducers: {
             number: (state, action) => {
                 if (state.operator === '') {
                     state.leftValue += action.payload
+                    state.result = state.leftValue;
                 } else
                     state.rightValue += action.payload
-                    state.result=state.leftValue.concat(state.operator).concat(state.rightValue)
+                state.result = state.leftValue + state.operator + state.rightValue
             },
-            addition: (state) => {
-                state.operator = "+"
-                state.result=state.leftValue.concat(state.operator)
+            setOperator(state, action) {
+                state.operator = action.payload;
+                state.result = state.leftValue + state.operator;
             },
-            substraction: (state) => {
-                state.operator = "-"
-                state.result=state.leftValue.concat(state.operator)
-            },
-            multiplication: (state) => {
-                state.operator = "*"
-                state.result=state.leftValue.concat(state.operator)
-            },
-            division: (state) => {
-                state.operator = "/"
-                state.result=state.leftValue.concat(state.operator)
-            },
-            result:(state)=>{
-                switch(state.operator){
+            result: (state) => {
+                const { leftValue, rightValue, operator } = state;
+                let result;
+                switch (operator) {
                     case '+':
-                            return {...state,result:parseFloat(state.leftValue) + parseFloat(state.rightValue),leftValue:'',rightValue:'',operator:''}
+                        result = parseFloat(leftValue) + parseFloat(rightValue);
+                        break;
                     case '-':
-                            return {...state,result:parseFloat(state.leftValue) - parseFloat(state.rightValue),leftValue:'',rightValue:'',operator:''}   
+                        result = parseFloat(leftValue) - parseFloat(rightValue);
+                        break;
                     case '*':
-                            return {...state,result:parseFloat(state.leftValue) * parseFloat(state.rightValue),leftValue:'',rightValue:'',operator:''}
+                        result = parseFloat(leftValue) * parseFloat(rightValue);
+                        break;
                     case '/':
-                            return {...state,result:parseFloat(state.leftValue) / parseFloat(state.rightValue),leftValue:'',rightValue:'',operator:''}
+                        result = parseFloat(leftValue) / parseFloat(rightValue);
+                        break;
+                    default:
+                        return 'ignore';
                 }
+                return { ...initialState, result: result }
             },
-            clear:(state)=>{
-                return {...state,result:0,leftValue:'',rightValue:'',operator:''}
+            clear: () => {
+                return initialState
             }
         }
     }
 );
 
-export const { number, addition, substraction, multiplication, division,result,clear } = calculatorSlice.actions;
+export const { number, setOperator, result, clear } = calculatorSlice.actions;
 export const selectCount = (state) => {
     return state.calculator.result;
 }
